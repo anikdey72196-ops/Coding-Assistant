@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+    volumes:
+      # Mount the current directory so the app can scan it if needed
+      - .:/workspace
+    working_dir: /workspace
+    command: ["--help"]
+
+  test:
+    build:
+      context: .
+      target: builder
+    command: ["ctest", "--test-dir", "build", "--output-on-failure"]
