@@ -1,4 +1,4 @@
-// Recursive directory walk, .gitignore parsing
+
 
 #include"scanner\project_scanner.h"
 
@@ -13,9 +13,9 @@ namespace assistant{
         vector<string> Scanner::Project_Scanner(const string& filepath){
             vector<string> foundfiles;
             
-            // Create an iterator pointing to the directory
+
             auto it = fs::recursive_directory_iterator(filepath);
-            // Default constructed iterator acts as the "end" condition
+            
             auto end = fs::recursive_directory_iterator();
 
             while (it != end) {

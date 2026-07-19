@@ -11,6 +11,9 @@ namespace assistant{
             vector<string> Project_Scanner(const string& filepath);
         };
         class IgnoreParser{
+            private:
+            vector<string> patterns ; 
+            
             public:
             void loadIgnonreFile(const string& filepath);
             bool isIgnored(const string& path);
