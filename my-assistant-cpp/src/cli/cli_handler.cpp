@@ -61,9 +61,10 @@ namespace assistant {
                     continue; // Ignore empty inputs
                 }
 
-                string response = "Assistant: I heard you say \"" + userInput + "\"";
+                cout << "Assistant is thinking...\n";
+                string response = llmClient.generateResponse(userInput);
                 db.saveResponse(userInput, response);
-                cout << response << "\n";
+                cout << "Assistant: " << response << "\n";
             }
         }
 

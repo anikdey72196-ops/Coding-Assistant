@@ -45,8 +45,6 @@ namespace assistant{
             return foundfiles;
 
         }
-
-        void IgnorePaeser::loadIgnonreFile(const string& filepath);
     }
 
 }
