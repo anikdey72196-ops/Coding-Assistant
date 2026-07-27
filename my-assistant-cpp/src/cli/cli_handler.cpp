@@ -31,29 +31,34 @@ namespace assistant {
                     string filepath = userInput.substr(6);
                     assistant::context::fileReader reader;
             
-                    cout<< reader.readtextfile(filepath)<<endl;
+                    string content = reader.readtextfile(filepath);
+                    cout << content << endl;
+
+                    activeContext = "File: " + filepath + "\nContent:\n" + content;
+                    cout << "\n[Success: " << filepath << " loaded into AI context memory!]\n";
                     continue;
                 }
 
-        
-                if (userInput.find("/scan ")){
+                if (userInput == "/clear") {
+                    activeContext.clear();
+                    cout << "[Context memory cleared!]\n";
+                    continue;
+                }
+
+                if (userInput.find("/scan ") == 0) {
                     string folderpath = userInput.substr(6);
                     // Create the scanner object
                     assistant::scanner::Scanner myScanner;
             
-           
                     vector<string> files = myScanner.Project_Scanner(folderpath);
             
-            
                     cout << "Found " << files.size() << " files:\n";
-            
             
                     for (const string& file : files) {
                         cout << " - " << file << "\n";
                     }
             
                     continue;
-        
                 }
         
 
@@ -62,7 +67,14 @@ namespace assistant {
                 }
 
                 cout << "Assistant is thinking...\n";
-                string response = llmClient.generateResponse(userInput);
+                
+                // Build the full prompt including active file context if present
+                string promptToSend = userInput;
+                if (!activeContext.empty()) {
+                    promptToSend = "Active Context:\n" + activeContext + "\n\nUser Question:\n" + userInput;
+                }
+
+                string response = llmClient.generateResponse(promptToSend);
                 db.saveResponse(userInput, response);
                 cout << "Assistant: " << response << "\n";
             }

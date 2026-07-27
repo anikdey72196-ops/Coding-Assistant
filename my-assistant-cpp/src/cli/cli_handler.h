@@ -10,6 +10,7 @@ namespace assistant {
             private:
             assistant::database::Database_Manager db;
             assistant::llm::LlmClient llmClient;
+            std::string activeContext;
             public:
             void startRepl();
         };

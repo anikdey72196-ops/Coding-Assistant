@@ -16,10 +16,14 @@ namespace assistant{
         }
         string LlmClient::generateResponse(const string& prompt){
             httplib::Client cli(endpoint , 11434);
+            
+            cli.set_read_timeout(540, 0); 
+            cli.set_connection_timeout(15, 0);
+
             json payload = {
                 {"model" , modelName},
                 {"prompt", prompt},
-                {"stream", false}
+                {"stream", true}
             };
             auto res = cli.Post("/api/generate", payload.dump(), "application/json");
 

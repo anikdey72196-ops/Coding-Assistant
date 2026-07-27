@@ -35,13 +35,19 @@ namespace assistant{
                 string regex_Rule = rule;
                 size_t pos = 0;
                 while((pos = regex_Rule.find(".",pos)) !=string:: npos){
+                    regex_Rule.replace(pos , 1 , "\\.");
+                    pos+=2;
+                }
+                
+                pos = 0;
+                while((pos = regex_Rule.find("*",pos)) !=string:: npos){
                     regex_Rule.replace(pos , 1 , ".*");
                     pos+=2;
                 }
 
-                regex patterns(regex_Rule);
+                regex patternObj(regex_Rule);
 
-                if (regex_search(path, patterns)) {
+                if (regex_search(path, patternObj)) {
                     return true;
                 }
             }

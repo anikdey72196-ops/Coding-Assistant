@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(my-assistant-cpp VERSION 0.1.0 LANGUAGES CXX)
+project(my-assistant VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -44,8 +44,8 @@ add_library(assistant_lib ${SRC_FILES})
 target_include_directories(assistant_lib PUBLIC include src)
 target_link_libraries(assistant_lib PUBLIC nlohmann_json::nlohmann_json httplib::httplib SQLiteCpp)
 # Main executable
-add_executable(my-assistant-cpp src/main.cpp)
-target_link_libraries(my-assistant-cpp PRIVATE assistant_lib)
+add_executable(my-assistant src/main.cpp)
+target_link_libraries(my-assistant PRIVATE assistant_lib)
 
 # Tests
 enable_testing()
