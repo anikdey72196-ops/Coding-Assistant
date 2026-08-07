@@ -10,7 +10,7 @@ namespace assistant {
             string modelName;
 
             public:
-            LlmClient(const string& model = "gemma4:12b");
+            LlmClient(const string& model = "gemma4:26b");
             string generateResponse(const string& prompt);
         };
 
