@@ -11,7 +11,8 @@ using json = nlohmann::json;
 
 namespace assistant{
     namespace llm{
-        LlmClient::LlmClient(const string& model): endpoint("localhost"),modelName(model){
+        LlmClient::LlmClient(const string& model, const string& serverEndpoint)
+            : endpoint(serverEndpoint), modelName(model) {
 
         }
         string LlmClient::generateResponse(const string& prompt){
@@ -23,7 +24,7 @@ namespace assistant{
             json payload = {
                 {"model" , modelName},
                 {"prompt", prompt},
-                {"stream", true}
+                {"stream", false}
             };
             auto res = cli.Post("/api/generate", payload.dump(), "application/json");
 

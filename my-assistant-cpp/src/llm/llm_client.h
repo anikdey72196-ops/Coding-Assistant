@@ -10,7 +10,7 @@ namespace assistant {
             string modelName;
 
             public:
-            LlmClient(const string& model = "gemma4:26b");
+            LlmClient(const string& model = "qwen2.5-coder:7b", const string& serverEndpoint = "localhost");
             string generateResponse(const string& prompt);
         };
 
