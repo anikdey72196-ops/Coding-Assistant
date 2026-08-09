@@ -17,11 +17,12 @@ cmake_install.cmake
 Makefile
 _deps/
 
-# Database files
+# Database and config files
 *.db
 *.sqlite
 *.sqlite3
 assistant.db
+config.yaml
 
 # Editor and IDE settings
 .vscode/
