@@ -34,8 +34,11 @@ namespace assistant {
                     string content = reader.readtextfile(filepath);
                     cout << content << endl;
 
-                    activeContext = "File: " + filepath + "\nContent:\n" + content;
-                    cout << "\n[Success: " << filepath << " loaded into AI context memory!]\n";
+                    if (!activeContext.empty()) {
+                        activeContext += "\n\n====================\n\n";
+                    }
+                    activeContext += "File: " + filepath + "\nContent:\n" + content;
+                    cout << "\n[Success: " << filepath << " added to AI context memory!]\n";
                     continue;
                 }
 
