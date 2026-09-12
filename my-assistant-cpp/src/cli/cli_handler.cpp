@@ -1,10 +1,13 @@
 #include "cli/cli_handler.h"
 #include <iostream>
 #include <string>
+#include <filesystem>
 #include "context/file_reader.h"
 #include "scanner/project_scanner.h"
+#include "code_inspector.h"
 
 using namespace std;
+namespace fs = std::filesystem;
 
 namespace assistant {
     namespace cli {
@@ -28,17 +31,25 @@ namespace assistant {
 
                 if (userInput.find("/read ") == 0)
                 {
-                    string filepath = userInput.substr(6);
-                    assistant::context::fileReader reader;
-            
-                    string content = reader.readtextfile(filepath);
-                    cout << content << endl;
+                    string targetPath = userInput.substr(6);
+                    assistant::inspector::CodeInspector inspector;
 
-                    if (!activeContext.empty()) {
-                        activeContext += "\n\n====================\n\n";
+                    // Inspect and auto-repair target path (file or directory)
+                    inspector.inspectPath(targetPath);
+
+                    if (fs::is_regular_file(targetPath)) {
+                        assistant::context::fileReader reader;
+                        string content = reader.readtextfile(targetPath);
+                        cout << content << endl;
+
+                        if (!activeContext.empty()) {
+                            activeContext += "\n\n====================\n\n";
+                        }
+                        activeContext += "File: " + targetPath + "\nContent:\n" + content;
+                        cout << "\n[Success: " << targetPath << " added to AI context memory!]\n";
+                    } else if (fs::is_directory(targetPath)) {
+                        cout << "\n[Success: Inspected directory " << targetPath << "]\n";
                     }
-                    activeContext += "File: " + filepath + "\nContent:\n" + content;
-                    cout << "\n[Success: " << filepath << " added to AI context memory!]\n";
                     continue;
                 }
 
