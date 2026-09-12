@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <vector>
+#include <utility>
 #include <SQLiteCpp/SQLiteCpp.h>
 
 using namespace std;

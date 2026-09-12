@@ -1,6 +1,6 @@
 
 
-#include"scanner\project_scanner.h"
+#include"scanner/project_scanner.h"
 
 #include<filesystem>
 #include<vector>
