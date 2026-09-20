@@ -2,6 +2,11 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
+#endif
 #include "context/file_reader.h"
 #include "scanner/project_scanner.h"
 #include "code_inspector.h"
@@ -9,10 +14,44 @@
 using namespace std;
 namespace fs = std::filesystem;
 
+static std::string trimString(const std::string& str) {
+    size_t first = str.find_first_not_of(" \t\r\n");
+    if (first == std::string::npos) return "";
+    size_t last = str.find_last_not_of(" \t\r\n");
+    return str.substr(first, (last - first + 1));
+}
+
+static std::string replaceAll(std::string str, const std::string& from, const std::string& to) {
+    if (from.empty()) return str;
+    size_t startPos = 0;
+    while ((startPos = str.find(from, startPos)) != std::string::npos) {
+        str.replace(startPos, from.length(), to);
+        startPos += to.length();
+    }
+    return str;
+}
+
+static std::string cleanTerminalText(std::string text) {
+    // Replace non-breaking hyphens, fancy dashes, and quotes with standard ASCII equivalents
+    text = replaceAll(text, "\xE2\x80\x91", "-");   // Non-breaking hyphen (‑)
+    text = replaceAll(text, "\xE2\x80\x93", "-");   // En dash (–)
+    text = replaceAll(text, "\xE2\x80\x94", "--");  // Em dash (—)
+    text = replaceAll(text, "\xE2\x80\x98", "'");   // Left single quote (‘)
+    text = replaceAll(text, "\xE2\x80\x99", "'");   // Right single quote (’)
+    text = replaceAll(text, "\xE2\x80\x9C", "\"");  // Left double quote (“)
+    text = replaceAll(text, "\xE2\x80\x9D", "\"");  // Right double quote (”)
+    text = replaceAll(text, "\xE2\x80\xA2", "*");   // Bullet (•)
+    return text;
+}
+
 namespace assistant {
     namespace cli {
 
         void CliHandler::startRepl() {
+#ifdef _WIN32
+            SetConsoleOutputCP(CP_UTF8);
+            SetConsoleCP(CP_UTF8);
+#endif
             string userInput;
             cout << "Assistant started. Type 'exit' to quit.\n";
 
@@ -23,15 +62,21 @@ namespace assistant {
                     break; 
                 }
 
+                if (!userInput.empty() && userInput.back() == '\r') {
+                    userInput.pop_back();
+                }
+
+                std::string trimmedInput = trimString(userInput);
+
                 // Check if the user wants to exit
-                if (userInput == "exit" || userInput == "quit") {
-                    cout << "Thanks forreaching us\n";
+                if (trimmedInput == "exit" || trimmedInput == "quit") {
+                    cout << "Thanks for reaching us\n";
                     break;
                 }
 
-                if (userInput.find("/read ") == 0)
+                if (trimmedInput.find("/read ") == 0)
                 {
-                    string targetPath = userInput.substr(6);
+                    string targetPath = trimString(trimmedInput.substr(6));
                     assistant::inspector::CodeInspector inspector;
 
                     // Inspect and auto-repair target path (file or directory)
@@ -53,14 +98,14 @@ namespace assistant {
                     continue;
                 }
 
-                if (userInput == "/clear") {
+                if (trimmedInput == "/clear") {
                     activeContext.clear();
                     cout << "[Context memory cleared!]\n";
                     continue;
                 }
 
-                if (userInput.find("/scan ") == 0) {
-                    string folderpath = userInput.substr(6);
+                if (trimmedInput.find("/scan ") == 0) {
+                    string folderpath = trimString(trimmedInput.substr(6));
                     // Create the scanner object
                     assistant::scanner::Scanner myScanner;
             
@@ -90,7 +135,7 @@ namespace assistant {
 
                 string response = llmClient.generateResponse(promptToSend);
                 db.saveResponse(userInput, response);
-                cout << "Assistant: " << response << "\n";
+                cout << "Assistant: " << cleanTerminalText(response) << "\n";
             }
         }
 

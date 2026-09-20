@@ -36,7 +36,7 @@ set(SQLITECPP_RUN_CPPLINT OFF CACHE BOOL "Disable linting" FORCE)
 FetchContent_MakeAvailable(SQLiteCpp)
 
 # Collect all source files
-file(GLOB_RECURSE SRC_FILES "src/*.cpp")
+file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS "src/*.cpp")
 list(FILTER SRC_FILES EXCLUDE REGEX "src/main.cpp")
 
 # Create a library from the source files to link with main and tests

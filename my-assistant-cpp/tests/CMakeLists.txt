@@ -8,7 +8,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 # Collect test files
-file(GLOB_RECURSE TEST_FILES "test_*.cpp")
+file(GLOB_RECURSE TEST_FILES CONFIGURE_DEPENDS "test_*.cpp")
 
 add_executable(assistant_tests ${TEST_FILES})
 target_link_libraries(assistant_tests

@@ -42,7 +42,10 @@ InspectionResult CodeInspector::inspectPath(const std::string& path) {
             }
         }
     } else if (fs::is_regular_file(p)) {
-        combinedResult = inspectFile(path);
+        std::string ext = p.extension().string();
+        if (ext == ".cpp" || ext == ".h" || ext == ".hpp" || ext == ".cc" || ext == ".cxx" || ext == ".c" || ext == ".hxx") {
+            combinedResult = inspectFile(path);
+        }
     }
 
     return combinedResult;

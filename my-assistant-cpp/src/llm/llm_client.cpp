@@ -9,10 +9,17 @@
 using namespace std;
 using json = nlohmann::json;
 
+static std::string trimString(const std::string& str) {
+    size_t first = str.find_first_not_of(" \t\r\n");
+    if (first == std::string::npos) return "";
+    size_t last = str.find_last_not_of(" \t\r\n");
+    return str.substr(first, (last - first + 1));
+}
+
 namespace assistant{
     namespace llm{
         LlmClient::LlmClient(const string& model, const string& serverEndpoint)
-            : endpoint(serverEndpoint), modelName(model) {
+            : endpoint(trimString(serverEndpoint)), modelName(trimString(model)) {
 
         }
         string LlmClient::generateResponse(const string& prompt){
@@ -42,6 +49,18 @@ namespace assistant{
         std::string errorMsg = "HTTP Request failed. ";
         if (res) {
             errorMsg += "Status code: " + std::to_string(res->status);
+            if (!res->body.empty()) {
+                try {
+                    json errJson = json::parse(res->body);
+                    if (errJson.contains("error")) {
+                        errorMsg += " (" + errJson["error"].get<std::string>() + ")";
+                    } else {
+                        errorMsg += " (" + res->body + ")";
+                    }
+                } catch (...) {
+                    errorMsg += " (" + res->body + ")";
+                }
+            }
         } else {
             auto err = res.error();
             errorMsg += "Error code: " + std::to_string(static_cast<int>(err));
